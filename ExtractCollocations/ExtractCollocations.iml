@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="aws-java-sdk-1.9.30" level="project" />
+    <orderEntry type="library" exported="" name="aws-java-sdk-flow-build-tools-1.9.30" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/aspectj-1.6/aspectjrt.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/aspectj-1.6/aspectjweaver.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/commons-codec-1.6/commons-codec-1.6.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/commons-logging-1.1.3/commons-logging-1.1.3.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/freemarker-2.3.18/freemarker-2.3.18.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/httpcomponents-client-4.3/httpclient-4.3.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/httpcomponents-client-4.3/httpcore-4.3.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/jackson-annotations-2.3.0/jackson-annotations-2.3.0.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/jackson-core-2.3.2/jackson-core-2.3.2.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/jackson-databind-2.3.2/jackson-databind-2.3.2.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/javax-mail-1.4.6/javax.mail-api-1.4.6.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/joda-time-2.2/joda-time-2.2.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/spring-3.0/spring-beans-3.0.7.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/spring-3.0/spring-context-3.0.7.jar!/" />
+          <root url="jar://$USER_HOME$/distributedProgramming/aws-java-sdk-1.9.30/third-party/spring-3.0/spring-core-3.0.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../Mevuzarot2/ExtractCollocations/src" />
+          <root url="file://$MODULE_DIR$/../../Mevuzarot2/Job1/src" />
+          <root url="file://$MODULE_DIR$/../../Mevuzarot2/Job2/src" />
+          <root url="file://$MODULE_DIR$/../../MevuzarotAss1/LocalApp/src" />
+          <root url="file://$MODULE_DIR$/../../MevuzarotAss1/Manager/src" />
+          <root url="file://$MODULE_DIR$/../../MevuzarotAss1/Worker/src" />
+          <root url="file://$MODULE_DIR$/src" />
+          <root url="file://$MODULE_DIR$/../Job1/src" />
+          <root url="file://$MODULE_DIR$/../../MevuzarotNoni/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
