@@ -59,14 +59,10 @@ public class Job1MR {
                             long occurrences = Long.parseLong(dataSetLine[2]);
 
                             Text leftWord, rightWord;
-                            if (twoGram[0].compareTo(twoGram[1]) == -1 || twoGram[0].compareTo(twoGram[1]) == 0)
-                            {
-                                leftWord = new Text(twoGram[0]);
-                                rightWord = new Text(twoGram[1]);
-                            } else {
-                                leftWord = new Text(twoGram[1]);
-                                rightWord = new Text(twoGram[0]);
-                            }
+
+                            leftWord = new Text(twoGram[0]);
+                            rightWord = new Text(twoGram[1]);
+
 
                             Job1ValuePair valuePair = new Job1ValuePair(new Job1KeyPair(leftWord, rightWord), year, new LongWritable(occurrences));
                             Job1KeyPair keyPairA = new Job1KeyPair(leftWord, Job1KeyPair.star);

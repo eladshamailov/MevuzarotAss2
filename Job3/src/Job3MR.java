@@ -1,5 +1,6 @@
 import java.io.IOException;
 
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -93,9 +94,8 @@ public class Job3MR
                     {
                         double pmi = Math.log(value.getTotalOcc().get()) + Math.log(sumOfOccurrences) -
                                 Math.log(value.getLeftOcc().get()) - Math.log(value.getRightOcc().get());
-                        Text val = new Text(value.getLeftOcc().get() + " " + value.getRightOcc() + " " + value.getTotalOcc() + " " + sumOfOccurrences + " " + value.getYear());
 
-                        context.write(key, val);
+                        context.write(key, new Text(Double.toString(pmi)));
                     }
                 }
             }
