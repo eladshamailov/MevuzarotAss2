@@ -1,0 +1,47 @@
+Instructions:
+Have Job1.jar-Job4.jar ready in a bucket called "ass2-yoav-eliran" (Dan joined after we named the bucket :))
+configure the steps and make sure that the run job flow request instance have all steps in its arguments.
+The arguments needed are specified in the Extract Collocation section.
+
+***************   Extract Collocation   ****************
+A local application to run the Map-Reduce task. It takes 4 arguments as input by the following order:
+minPmi - the minimum pmi threshold that above that, a pair is a collocation
+relMinPmi - same according to the assignment request
+heb - legacy for if hebrew is the wanted corpus
+includeStopWords - a boolean to specify if the output will be with stop words or without
+
+This is where all the map reduce steps are configured
+
+****************************   Job1   *****************************
+The first job takes as input the 2-gram corpus, parses the textline by line
+and sends the reducer 4 different key-value pairs:
+<leftWord,*>
+<leftWord,->
+<rightWord,*>
+<rightWord,->
+
+With the NaturalKeyGroupingComparator we made sure that all the same words, wether they were
+a left word or right word, will get to the same reducer iteration and with the Composi, c(21,2teKeyComparator
+we made sure that all the stars would get before the minuses. When a star got the reducer, a counter
+would add another instance to the word, and after that the minus was to save the values accumulated,
+and thats how we counted how many time a word started a pair or finished a pair.
+
+JOB'S PURPOSE: count left and right occurrences of words
+****************************   Job2   *****************************
+The second job, summed the accumulated values for the left words and for the right words.
+Also, it summed the occurences for the pair and because it summed it twice for every pair,
+we divide it at the end in 2.
+
+JOB'S PURPOSE: connect last job's summation and count total occurrences of pair
+****************************   Job3   *****************************
+In this step we use the same concept of * and send one pair of stars when inside the value
+there is the original pair and after that we send the original pair, all the stars will get first to the reducer
+and together, with the help of NaturalKeyGroupingComparator & CompositeKeyComparator, That way we will sum in a counter
+every occurrences of a pair and then for every pair we save it in its data so later we can calculate npmi for it. 
+
+JOB'S PURPOSE: count the number of pairs in the corpus
+****************************   Job4   *****************************
+Here we already get the pair with its year and npmi. we use the same concept of stars here to calculate the sum of pmis
+in the corpus, so eventually for every "normal" (not with stars) pair in the reducer, you have c(w1), c(w2), c(w1,w2) and N 
+so the reducer will output only the pairs that are above theinput arguments threshold.
+At the end of the step, we go over the files, delete the empty ones and rename them according to their decade.

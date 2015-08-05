@@ -10,13 +10,13 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class Job1Main {
 
-    private static final int NUM_OF_DECADES = 12;
+    private static final int NUM_OF_DECADES = 52;
 
     public static void main(String[] args) throws Exception
     {
 
         Configuration conf = new Configuration();
-        conf.set("mapred.max.split.size", "5242880");//set split size to 5mb
+        conf.set("mapred.max.split.size", "10485760");//set split size to 10mb
         conf.set("includeStopWords",args[3]);
 
         Job job = new Job(conf, "Job1MapReduce");

@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Job4:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Job4_jar</output-path>
+    <root id="archive" name="Job4.jar">
+      <element id="module-output" name="Job4" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Job4/src/hadoop-mapreduce-client-core-2.7.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Job4/src/hadoop-common-2.7.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

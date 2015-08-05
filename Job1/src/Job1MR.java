@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.hadoop.io.BooleanWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -9,15 +10,40 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class Job1MR {
-    public static class MapJob1 extends Mapper<LongWritable, Text, Job1KeyPair, Job1ValuePair> {
+public class Job1MR
+{
+    public static class MapJob1 extends Mapper<LongWritable, Text, Job1KeyPair, Job1ValuePair>
+    {
         private List<String> stopWords;
         private boolean includeStopWords;
+
+
+        /**
+         * This function is to prevent a false collocation
+         * @param left left word of pair
+         * @param right right word of pair
+         * @return true if both words in pair are numbers
+         */
+        private boolean isPairOfNumbers(String left, String right)
+        {
+            boolean parsable = true;
+            try
+            {
+                Integer.parseInt(left);
+                Integer.parseInt(right);
+            }
+            catch (NumberFormatException e)
+            {
+                parsable = false;
+            }
+            return parsable;
+        }
 
         /**
          * Called once at the beginning of the task.
          */
-        protected void setup(Context context) throws IOException, InterruptedException {
+        protected void setup(Context context) throws IOException, InterruptedException
+        {
             includeStopWords = context.getConfiguration().getBoolean("includeStopWords", true);
             stopWords = Arrays.asList(new StopWords().getStopWords(includeStopWords));
         }
@@ -46,36 +72,33 @@ public class Job1MR {
             // n-gram, year, occurrences .
             if (dataSetLine.length > 2)
             {
-                //get the year and validate it's pass 1900
+                //get the rest of the data from the data set line
+                String[] twoGram = dataSetLine[0].split(" ");
                 IntWritable year = new IntWritable(Integer.parseInt(dataSetLine[1]));
-                if (year.get() > 1900 )
-                {
-                    //get the rest of the data from the data set line
-                    String[] twoGram = dataSetLine[0].split(" ");
 
-                    if (twoGram.length == 2) {
-                        if (!stopWords.contains(twoGram[0]) && !stopWords.contains(twoGram[1]))
-                        {
-                            long occurrences = Long.parseLong(dataSetLine[2]);
+                if (twoGram.length == 2) {
+                    if (!stopWords.contains(twoGram[0]) && !stopWords.contains(twoGram[1])
+                            && !isPairOfNumbers(twoGram[0],twoGram[1]))
+                    {
+                        long occurrences = Long.parseLong(dataSetLine[2]);
 
-                            Text leftWord, rightWord;
+                        Text leftWord, rightWord;
 
-                            leftWord = new Text(twoGram[0]);
-                            rightWord = new Text(twoGram[1]);
+                        leftWord = new Text(twoGram[0]);
+                        rightWord = new Text(twoGram[1]);
 
+                        Job1ValuePair valuePairLeft = new Job1ValuePair(new Job1KeyPair(leftWord, rightWord), year, new LongWritable(occurrences), new BooleanWritable(true));
+                        Job1ValuePair valuePairRight = new Job1ValuePair(new Job1KeyPair(leftWord, rightWord), year, new LongWritable(occurrences), new BooleanWritable(false));
 
-                            Job1ValuePair valuePair = new Job1ValuePair(new Job1KeyPair(leftWord, rightWord), year, new LongWritable(occurrences));
-                            Job1KeyPair keyPairA = new Job1KeyPair(leftWord, Job1KeyPair.star);
-                            Job1KeyPair keyPairB = new Job1KeyPair(leftWord, Job1KeyPair.minus);
-                            Job1KeyPair keyPairC = new Job1KeyPair(rightWord, Job1KeyPair.star);
-                            Job1KeyPair keyPairD = new Job1KeyPair(rightWord, Job1KeyPair.minus);
+                        Job1KeyPair keyPairA = new Job1KeyPair(leftWord, Job1KeyPair.star);
+                        Job1KeyPair keyPairB = new Job1KeyPair(leftWord, Job1KeyPair.minus);
+                        Job1KeyPair keyPairC = new Job1KeyPair(rightWord, Job1KeyPair.star);
+                        Job1KeyPair keyPairD = new Job1KeyPair(rightWord, Job1KeyPair.minus);
 
-
-                            context.write(keyPairA, valuePair);
-                            context.write(keyPairB, valuePair);
-                            context.write(keyPairC, valuePair);
-                            context.write(keyPairD, valuePair);
-                        }
+                        context.write(keyPairA, valuePairLeft);
+                        context.write(keyPairB, valuePairLeft);
+                        context.write(keyPairC, valuePairRight);
+                        context.write(keyPairD, valuePairRight);
                     }
                 }
             }
@@ -91,7 +114,7 @@ public class Job1MR {
             public int getPartition(Job1KeyPair key, Job1ValuePair value, int numPartitions)
             {
                 // set the reducer according to the decade
-                return (value.getYear() - 1900) / 10 % numPartitions;
+                return (value.getYear() - 1500) / 10 % numPartitions;
             }
         }
 
@@ -102,27 +125,31 @@ public class Job1MR {
             protected void reduce(Job1KeyPair key, Iterable<Job1ValuePair> values, Context context) throws IOException, InterruptedException
             {
                 //accumulate all the values of this key
-                long sumOfValues = 0;
+                long sumOfLeftOcc = 0;
+                long sumOfRightOcc = 0;
 
                 for (Job1ValuePair value : values)
                 {
                     if (key.getRightWord().compareTo(Job1KeyPair.star) == 0) //<x,*>
                     {
-                        sumOfValues += value.getOccurrences().get();
-                    } else //<x,->
+                        if (value.isLeft().get() == true)
+                        {
+                            sumOfLeftOcc += value.getOccurrences().get();
+                        }
+                        else
+                        {
+                            sumOfRightOcc += value.getOccurrences().get();
+                        }
+                    }
+                    else //<x,->
                     {
-                        long left = isLeftWordInPair(value.getPair(), key.getLeftWord()) ? sumOfValues : -1;
-                        long right = left == -1 ? sumOfValues : -1;
+                        long left = value.isLeft().get() ? sumOfLeftOcc : 0;
+                        long right = !value.isLeft().get() ? sumOfRightOcc : 0;
+
                         context.write(value.getPair(), new Text(left + " " + right + " " + value.getYear() + " " + value.getOccurrences()));
                     }
                 }
             }
-
-            private boolean isLeftWordInPair(Job1KeyPair pair, Text leftWord)
-            {
-                return leftWord.compareTo(pair.getLeftWord()) == 0;
-            }
-
         }
     }
 }

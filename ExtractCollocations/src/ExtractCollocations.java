@@ -45,8 +45,9 @@ public class ExtractCollocations {
 		clientConfiguration.setConnectionTimeout(0);
 		clientConfiguration.setSocketTimeout(0);
 
-		String corpus = "s3n://"+bucketName+"/heb-all-100k-2gram";
-		//String corpus = "s3://datasets.elasticmapreduce/ngrams/books/20090715/heb-all/2gram/data"; //Hebrew corpus
+		//String corpus = "s3n://" + bucketName + "/heb-all-100k-2gram";
+		String corpus = "s3://datasets.elasticmapreduce/ngrams/books/20090715/heb-all/2gram/data"; //Hebrew corpus
+
 		//*********************************Job1 configuration***********************************************
 		HadoopJarStepConfig hadoopJarStep1 = new HadoopJarStepConfig()
 		    .withJar("s3n://" + bucketName + "/Job1.jar")
@@ -57,7 +58,6 @@ public class ExtractCollocations {
 		    .withName("Job1")
 		    .withHadoopJarStep(hadoopJarStep1)
 			.withActionOnFailure("TERMINATE_JOB_FLOW");
-		
 
 		//*********************************Job2 configuration***********************************************
 		HadoopJarStepConfig hadoopJarStep2 = new HadoopJarStepConfig()
@@ -80,9 +80,9 @@ public class ExtractCollocations {
 				.withName("Job3")
 				.withHadoopJarStep(hadoopJarStep3)
 				.withActionOnFailure("TERMINATE_JOB_FLOW");
-/*
+
 		HadoopJarStepConfig hadoopJarStep4 = new HadoopJarStepConfig()
-				.withJar("s3n://"+bucketName+"/Job4.jar")
+				.withJar("s3n://" + bucketName + "/Job4.jar")
 				.withMainClass("Job4.Job4Main")
 				.withArgs("s3n://" + bucketName + "/outputJob3/", "s3n://" + bucketName + "/outputJob4/", Double.toString(minPmi), Double.toString(relMinPmi));
 
@@ -90,20 +90,20 @@ public class ExtractCollocations {
 				.withName("Job4")
 				.withHadoopJarStep(hadoopJarStep4)
 				.withActionOnFailure("TERMINATE_JOB_FLOW");
-	*/
+
 		//*********************************JobFlow configuration***********************************************
 		JobFlowInstancesConfig instances = new JobFlowInstancesConfig()
-				.withInstanceCount(5)
-				.withMasterInstanceType(InstanceType.M1Medium.toString())
-				.withSlaveInstanceType(InstanceType.M1Medium.toString())
+				.withInstanceCount(10)
+				.withMasterInstanceType(InstanceType.M1Large.toString())
+				.withSlaveInstanceType(InstanceType.M1Large.toString())
 				.withHadoopVersion("2.2.0").withEc2KeyName("yoaveliran")
-				.withKeepJobFlowAliveWhenNoSteps(true)
+				.withKeepJobFlowAliveWhenNoSteps(false)
 				.withPlacement(new PlacementType("us-east-1a"));
 
 		RunJobFlowRequest runFlowRequest = new RunJobFlowRequest()
 		    .withName("ExtractCollocations")
 		    .withInstances(instances)
-			.withSteps(stepConfig1, stepConfig2, stepConfig3/*, stepConfig4*/)
+			.withSteps(stepConfig1, stepConfig2, stepConfig3, stepConfig4)
 			.withLogUri("s3n://" + bucketName + "/logs/");
 
 		runFlowRequest.setServiceRole("EMR_DefaultRole");
@@ -122,7 +122,7 @@ public class ExtractCollocations {
 		if (theCluster != null) {
 			AddJobFlowStepsRequest request = new AddJobFlowStepsRequest()
 					.withJobFlowId(theCluster.getId())
-					.withSteps(stepConfig1);
+					.withSteps(stepConfig1, stepConfig2, stepConfig3, stepConfig4);
 			AddJobFlowStepsResult runJobFlowResult = mapReduce.addJobFlowSteps(request);
 			String jobFlowId = theCluster.getId();
 			System.out.println("Ran job flow with id: " + jobFlowId);

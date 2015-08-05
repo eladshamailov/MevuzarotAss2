@@ -8,7 +8,7 @@ import org.apache.hadoop.io.WritableComparable;
 /**
  * The class re represents a related pair with it's decade
  */
-public class Job3KeyPair implements WritableComparable<Job3KeyPair>
+public class Job4KeyPair implements WritableComparable<Job4KeyPair>
 {
     public static Text star = new Text("*");
 
@@ -18,7 +18,7 @@ public class Job3KeyPair implements WritableComparable<Job3KeyPair>
     /**
      * default constructor
      */
-    public Job3KeyPair()
+    public Job4KeyPair()
     {
         this.leftWord = new Text();
         this.rightWord = new Text();
@@ -29,7 +29,7 @@ public class Job3KeyPair implements WritableComparable<Job3KeyPair>
      * @param leftWord the left word in the pair
      * @param rightWord the right word in the pair
      */
-    public Job3KeyPair(Text leftWord, Text rightWord)
+    public Job4KeyPair(Text leftWord, Text rightWord)
     {
         this.leftWord = leftWord;
         this.rightWord = rightWord;
@@ -63,7 +63,7 @@ public class Job3KeyPair implements WritableComparable<Job3KeyPair>
     }
 
     @Override
-    public int compareTo(Job3KeyPair other)
+    public int compareTo(Job4KeyPair other)
     {
         if (leftWord.compareTo(star) == 0 && rightWord.compareTo(star) != 0)
         {

@@ -4,13 +4,12 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class Job2Main {
 
-    private static final int NUM_OF_DECADES = 12;
+    private static final int NUM_OF_DECADES = 52;
 
     public static void main(String[] args) throws Exception
     {
@@ -18,7 +17,7 @@ public class Job2Main {
         Configuration conf = new Configuration();
         conf.set("mapred.max.split.size", "5242880");//set split size to 5mb
 
-        Job job = new Job(conf, "Job1MapReduce");
+        Job job = new Job(conf, "Job2MapReduce");
         job.setInputFormatClass(TextInputFormat.class);
         job.setJarByClass(Job2MR.class);
         job.setMapperClass(Job2MR.MapJob2.class);

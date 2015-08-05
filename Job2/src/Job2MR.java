@@ -65,7 +65,7 @@ public class Job2MR
             public int getPartition(Job2KeyPair key, LongWritable value, int numPartitions)
             {
                 // set the reducer according to the decade
-                return (key.getYear().get() - 1900) / 10 % numPartitions;
+                return (key.getYear().get() - 1500) / 10 % numPartitions;
             }
         }
 
@@ -84,13 +84,21 @@ public class Job2MR
                     long right = key.getRightOcc().get();
                     long left = key.getLeftOcc().get();
 
-                    if (left == -1)
+                    if (left == right)
                     {
-                        rightOcc += right;
+                        rightOcc = right;
+                        leftOcc = left;
                     }
                     else
                     {
-                        leftOcc += left;
+                        if (left == 0)
+                        {
+                            rightOcc = right;
+                        }
+                        else
+                        {
+                            leftOcc = left;
+                        }
                     }
 
                     totalOcc += value.get();

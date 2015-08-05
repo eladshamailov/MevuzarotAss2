@@ -1,6 +1,5 @@
 import java.io.IOException;
 
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -48,7 +47,7 @@ public class Job3MR
 
                     // same concept as in the first job. we send each pair twice. for a <*,*> pair,
                     // we will sum the number of occurrences that get to the reducer with the pair.
-                    // for a <-,-> pair, we would save what we summed this far to the next mapper.
+                    // for a <leftWord,rightWord> pair, we would save what we summed this far to the next mapper.
                     // *** we know that a star will get to the reducer before the minus because we used
                     // NaturalKeyGroupingComparator and CompositeKeyComparator
                     Job3KeyPair keyPairA = new Job3KeyPair(new Text(pair[0]),new Text(pair[1]));
@@ -72,7 +71,7 @@ public class Job3MR
             public int getPartition(Job3KeyPair key, Job3Value value, int numPartitions)
             {
                 // set the reducer according to the decade
-                return (value.getYear().get() - 1900) / 10 % numPartitions;
+                return (value.getYear().get() - 1500) / 10 % numPartitions;
             }
         }
 
@@ -83,21 +82,32 @@ public class Job3MR
             {
                 //accumulate all the values of this key
                 long sumOfOccurrences = 0;
-                System.out.println("Printing reducer:");
+
                 for (Job3Value value : values)
                 {
-                    if (key.getLeftWord().compareTo(Job3KeyPair.star) == 0) //< , >
+                    if (key.getLeftWord().compareTo(Job3KeyPair.star) == 0) //<*,*>
                     {
-                        sumOfOccurrences += value.getTotalOcc().get();
+                        sumOfOccurrences += value.getTotalOcc().get(); //N
                     }
                     else //<leftWord,rightWord>
                     {
-                        double pmi = Math.log(value.getTotalOcc().get()) + Math.log(sumOfOccurrences) -
-                                Math.log(value.getLeftOcc().get()) - Math.log(value.getRightOcc().get());
+                        double npmi = calculateNpmi(value, sumOfOccurrences);
 
-                        context.write(key, new Text(Double.toString(pmi)));
+                        context.write(key, new Text(value.getYear().get() + " " + npmi));
                     }
                 }
+            }
+
+            private double calculateNpmi(Job3Value value, long sumOfOccurrences)
+            {
+                double pmi = Math.log(value.getTotalOcc().get()) + Math.log(sumOfOccurrences) -
+                        Math.log(value.getLeftOcc().get()) - Math.log(value.getRightOcc().get());
+                double tmpVal = (double)value.getTotalOcc().get() / (double)sumOfOccurrences;
+                double plr = -Math.log(tmpVal);
+                double npmi = pmi / plr;
+                npmi = Math.floor(npmi * 1000000) / 1000000;
+
+                return npmi;
             }
         }
     }
