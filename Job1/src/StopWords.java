@@ -193,8 +193,8 @@ public class StopWords {
     {
     }
 
-    public String[] getStopWords(boolean includeStopWords) {
-        if (includeStopWords)
+    public String[] getStopWords(boolean removeStopWords) {
+        if (removeStopWords)
             return sw;
         else
             return new String[0];

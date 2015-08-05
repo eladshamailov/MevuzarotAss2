@@ -15,7 +15,7 @@ public class ExtractCollocations {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		double minPmi, relMinPmi;
-		boolean includeStopWords;
+		boolean removeStopWords;
 
 		//validate input arguments
 		if (args == null || args.length != 4 )
@@ -25,7 +25,7 @@ public class ExtractCollocations {
 		{
 			minPmi = Double.parseDouble(args[0]);
 			relMinPmi = Double.parseDouble(args[1]);
-			includeStopWords = Boolean.parseBoolean(args[3]);
+			removeStopWords = Boolean.parseBoolean(args[3]);
 		}
 		catch(NumberFormatException e)
 		{
@@ -45,14 +45,13 @@ public class ExtractCollocations {
 		clientConfiguration.setConnectionTimeout(0);
 		clientConfiguration.setSocketTimeout(0);
 
-		//String corpus = "s3n://" + bucketName + "/heb-all-100k-2gram";
 		String corpus = "s3://datasets.elasticmapreduce/ngrams/books/20090715/heb-all/2gram/data"; //Hebrew corpus
 
 		//*********************************Job1 configuration***********************************************
 		HadoopJarStepConfig hadoopJarStep1 = new HadoopJarStepConfig()
 		    .withJar("s3n://" + bucketName + "/Job1.jar")
 		    .withMainClass("Job1.Job1Main")
-		    .withArgs(corpus, "s3n://" + bucketName + "/outputJob1/", Boolean.toString(includeStopWords));
+		    .withArgs(corpus, "s3n://" + bucketName + "/outputJob1/", Boolean.toString(removeStopWords));
 		 
 		StepConfig stepConfig1 = new StepConfig()
 		    .withName("Job1")

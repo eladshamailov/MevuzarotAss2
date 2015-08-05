@@ -15,7 +15,7 @@ public class Job1MR
     public static class MapJob1 extends Mapper<LongWritable, Text, Job1KeyPair, Job1ValuePair>
     {
         private List<String> stopWords;
-        private boolean includeStopWords;
+        private boolean removeStopWords;
 
 
         /**
@@ -44,8 +44,8 @@ public class Job1MR
          */
         protected void setup(Context context) throws IOException, InterruptedException
         {
-            includeStopWords = context.getConfiguration().getBoolean("includeStopWords", true);
-            stopWords = Arrays.asList(new StopWords().getStopWords(includeStopWords));
+            removeStopWords = context.getConfiguration().getBoolean("removeStopWords", true);
+            stopWords = Arrays.asList(new StopWords().getStopWords(removeStopWords));
         }
 
         /**
